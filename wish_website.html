@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wish For You ❤️</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    min-height:100vh;
+    font-family:"Segoe UI",sans-serif;
+    background:linear-gradient(135deg,#18001f,#4b0038,#16001c);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:25px;
+    overflow-x:hidden;
+}
+
+.container{
+    width:100%;
+    max-width:650px;
+    padding:35px 28px;
+    text-align:center;
+    border-radius:28px;
+    background:rgba(255,255,255,0.10);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.2);
+    box-shadow:0 20px 70px rgba(0,0,0,0.5);
+}
+
+h1{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#ffd8eb;
+    margin-bottom:28px;
+}
+
+input,select{
+    width:100%;
+    padding:15px;
+    margin:8px 0;
+    border:none;
+    outline:none;
+    border-radius:13px;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:none;
+    border-radius:13px;
+    background:linear-gradient(90deg,#ff2772,#ff0055);
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+
+.wish{
+    display:none;
+    margin-top:30px;
+    padding:28px;
+    border-radius:22px;
+    background:rgba(255,255,255,.12);
+    animation:appear 1s ease;
+}
+
+.wish h2{
+    font-size:30px;
+    margin-bottom:18px;
+}
+
+.wish p{
+    font-size:18px;
+    line-height:1.8;
+    color:#ffe8f3;
+}
+
+.footer{
+    margin-top:25px;
+    font-size:13px;
+    color:#ffc4dd;
+}
+
+.heart{
+    position:fixed;
+    bottom:-50px;
+    pointer-events:none;
+    animation:float 6s linear forwards;
+}
+
+@keyframes float{
+
+    0%{
+        transform:translateY(0) rotate(0deg);
+        opacity:0;
+    }
+
+    20%{
+        opacity:1;
+    }
+
+    100%{
+        transform:translateY(-110vh) rotate(360deg);
+        opacity:0;
+    }
+}
+
+@keyframes appear{
+
+    from{
+        opacity:0;
+        transform:translateY(25px) scale(.95);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+@media(max-width:500px){
+
+    h1{
+        font-size:30px;
+    }
+
+    .wish h2{
+        font-size:25px;
+    }
+
+    .wish p{
+        font-size:16px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+<h1>💖 Wish For You 💖</h1>
+
+<div class="subtitle">
+Create a beautiful wish for someone special ✨
+</div>
+
+
+<input
+    id="name"
+    type="text"
+    placeholder="Enter person's name ❤️"
+>
+
+
+<select id="occasion">
+
+<option value="birthday">🎂 Birthday</option>
+
+<option value="anniversary">💍 Anniversary</option>
+
+</select>
+
+
+<select id="relation">
+
+<option value="sister">👩 Sister / Behen</option>
+
+<option value="brother">👨 Brother / Bhai</option>
+
+<option value="mother">👩 Mother / Maa</option>
+
+<option value="father">👨 Father / Papa</option>
+
+<option value="chacha">👨 Chacha</option>
+
+<option value="mami">👩 Mami</option>
+
+<option value="uncle">👨 Uncle</option>
+
+<option value="aunt">👩 Aunt</option>
+
+<option value="dada">👴 Dada / Nana</option>
+
+<option value="dadi">👵 Dadi / Nani</option>
+
+<option value="girlfriend">❤️ Girlfriend</option>
+
+<option value="boyfriend">❤️ Boyfriend</option>
+
+<option value="husband">💍 Husband</option>
+
+<option value="wife">💍 Wife</option>
+
+<option value="friend">🫂 Friend</option>
+
+<option value="other">✨ Other</option>
+
+</select>
+
+
+<button onclick="createWish()">
+Create Wish 💌
+</button>
+
+
+<div class="wish" id="wishBox">
+
+<h2 id="wishTitle"></h2>
+
+<p id="wishText"></p>
+
+</div>
+
+
+<div class="footer">
+Made with ❤️ for your special people
+</div>
+
+</div>
+
+
+<script>
+
+
+function createWish(){
+
+const name =
+document.getElementById("name").value.trim();
+
+const occasion =
+document.getElementById("occasion").value;
+
+const relation =
+document.getElementById("relation").value;
+
+
+if(name === ""){
+
+alert("Please enter a name ❤️");
+
+return;
+
+}
+
+
+const title =
+document.getElementById("wishTitle");
+
+const text =
+document.getElementById("wishText");
+
+const box =
+document.getElementById("wishBox");
+
+
+let relationText = "";
+
+
+/* RELATION NAMES */
+
+const relationNames = {
+
+sister:"my lovely sister",
+brother:"my dear brother",
+mother:"my wonderful mother",
+father:"my amazing father",
+chacha:"my dear Chacha",
+mami:"my lovely Mami",
+uncle:"my dear Uncle",
+aunt:"my lovely Aunt",
+dada:"my dear Dada/Nana",
+dadi:"my lovely Dadi/Nani",
+girlfriend:"the love of my life",
+boyfriend:"the love of my life",
+husband:"my wonderful husband",
+wife:"my beautiful wife",
+friend:"my amazing friend",
+other:"a very special person"
+
+};
+
+
+relationText =
+relationNames[relation];
+
+
+/* BIRTHDAY */
+
+if(occasion === "birthday"){
+
+
+title.innerHTML =
+"🎂 Happy Birthday, " + name + " ❤️";
+
+
+let wishes = {
+
+
+sister:
+
+"Happy Birthday to my lovely sister, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"You are not just my sister, but also one of the most special people in my life. " +
+"Thank you for always being there and making life more beautiful. 🥰<br><br>" +
+
+"May you always keep smiling, achieve everything you dream of, " +
+"and have an amazing year ahead. ✨<br><br>" +
+
+"Happy Birthday once again! Stay happy and blessed always. ❤️",
+
+
+brother:
+
+"Happy Birthday to my dear brother, " +
+name +
+"! 🎂🎉<br><br>" +
+
+"May you achieve every goal you have and always stay happy, healthy and successful. 💪✨<br><br>" +
+
+"Keep smiling, keep enjoying life and keep being the amazing person you are. ❤️<br><br>" +
+
+"Have a fantastic birthday! 🎉",
+
+
+mother:
+
+"Happy Birthday to the most wonderful mother, " +
+name +
+"! ❤️🎂<br><br>" +
+
+"Your love, care and support mean more than words can ever explain. " +
+"You make every moment of life special. 🥰<br><br>" +
+
+"May you always stay healthy, happy and smiling. " +
+"You deserve all the happiness in the world. 🌸<br><br>" +
+
+"Happy Birthday Maa! ❤️",
+
+
+father:
+
+"Happy Birthday to the most amazing father, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"Thank you for always supporting, guiding and believing in me. " +
+"Your strength and love inspire me every day. 🙏❤️<br><br>" +
+
+"May you always stay healthy, happy and successful. ✨<br><br>" +
+
+"Happy Birthday Papa! 🎉❤️",
+
+
+chacha:
+
+"Happy Birthday to my dear Chacha, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"May your life always be filled with happiness, good health and countless beautiful moments. ✨<br><br>" +
+
+"Have a wonderful birthday and an amazing year ahead! 🎉",
+
+
+mami:
+
+"Happy Birthday to my lovely Mami, " +
+name +
+"! 🎂🌸<br><br>" +
+
+"Your kindness, love and beautiful nature make every family moment special. ❤️<br><br>" +
+
+"May your birthday bring you endless happiness, good health and lots of beautiful memories. ✨<br><br>" +
+
+"Happy Birthday Mami! 🎉❤️",
+
+
+uncle:
+
+"Happy Birthday to my dear Uncle, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"May this new year of your life bring success, happiness, good health and lots of wonderful memories. ✨<br><br>" +
+
+"Have an amazing birthday! 🎉",
+
+
+aunt:
+
+"Happy Birthday to my lovely Aunt, " +
+name +
+"! 🎂🌸<br><br>" +
+
+"May your special day be filled with smiles, happiness and beautiful memories. ❤️<br><br>" +
+
+"Wishing you a wonderful year ahead! ✨",
+
+
+dada:
+
+"Happy Birthday to my dear Dada/Nana, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"Your love and blessings are truly precious. " +
+"May you always stay healthy, happy and surrounded by love. ❤️<br><br>" +
+
+"Wishing you a beautiful birthday filled with happiness. ✨",
+
+
+dadi:
+
+"Happy Birthday to my lovely Dadi/Nani, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"Your love and blessings make our family more beautiful. " +
+"May you always stay healthy, happy and smiling. 🌸<br><br>" +
+
+"Happy Birthday! ❤️",
+
+
+girlfriend:
+
+"Happy Birthday to the love of my life, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"You are one of the most beautiful parts of my life. " +
+"Your smile, your presence and every little moment with you means so much to me. 🥰<br><br>" +
+
+"May all your dreams come true and may your smile always stay this beautiful. ✨<br><br>" +
+
+"I am lucky to have you. Happy Birthday meri jaan! ❤️🎂",
+
+
+boyfriend:
+
+"Happy Birthday to the love of my life, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"Thank you for being such an amazing part of my life. " +
+"Every moment with you becomes a beautiful memory. 🥰<br><br>" +
+
+"May you achieve everything you dream of and always stay happy. ✨<br><br>" +
+
+"Happy Birthday my love! ❤️",
+
+
+husband:
+
+"Happy Birthday to my wonderful husband, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"Life feels more beautiful because I get to share it with you. " +
+"Thank you for your love, care and endless support. 🥰<br><br>" +
+
+"May this year bring you success, happiness and everything your heart desires. ✨<br><br>" +
+
+"Happy Birthday my love! ❤️",
+
+
+wife:
+
+"Happy Birthday to my beautiful wife, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"You make my life brighter with your love, smile and presence. " +
+"I am truly lucky to have you beside me. 🥰<br><br>" +
+
+"May every dream of yours come true and may happiness always surround you. ✨<br><br>" +
+
+"Happy Birthday my love! ❤️",
+
+
+friend:
+
+"Happy Birthday to my amazing friend, " +
+name +
+"! 🎂🎉<br><br>" +
+
+"May your life be filled with happiness, success, laughter and unforgettable memories. ❤️<br><br>" +
+
+"Keep smiling and keep shining! ✨<br><br>" +
+
+"Have an awesome birthday! 🎉",
+
+
+other:
+
+"Happy Birthday, " +
+name +
+"! 🎂❤️<br><br>" +
+
+"Wishing you a day filled with happiness, smiles and beautiful memories. ✨<br><br>" +
+
+"May this new year of your life bring you success, good health and endless happiness. ❤️<br><br>" +
+
+"Have a wonderful birthday! 🎉"
+
+};
+
+
+text.innerHTML =
+wishes[relation];
+
+}
+
+
+/* ANNIVERSARY */
+
+else{
+
+
+title.innerHTML =
+"💍 Happy Anniversary, " + name + " ❤️";
+
+
+let anniversaryWishes = {
+
+
+girlfriend:
+
+"Happy Anniversary, " +
+name +
+"! ❤️💍<br><br>" +
+
+"Every moment with you is a memory I will always cherish. " +
+"Thank you for filling my life with love, happiness and beautiful moments. 🥰<br><br>" +
+
+"Here's to all the memories we have created and all the beautiful moments still waiting for us. ✨<br><br>" +
+
+"Happy Anniversary meri jaan! ❤️",
+
+
+boyfriend:
+
+"Happy Anniversary, " +
+name +
+"! ❤️💍<br><br>" +
+
+"Every moment spent with you is special and unforgettable. " +
+"Thank you for being such an amazing part of my life. 🥰<br><br>" +
+
+"May our bond become stronger and more beautiful with every passing year. ✨<br><br>" +
+
+"Happy Anniversary my love! ❤️",
+
+
+husband:
+
+"Happy Anniversary to my wonderful husband, " +
+name +
+"! ❤️💍<br><br>" +
+
+"Every year with you gives me more reasons to be grateful. " +
+"Thank you for your love, support and all the beautiful memories we share. 🥰<br><br>" +
+
+"Here's to many more beautiful years together. ❤️<br><br>" +
+
+"Happy Anniversary my love! 💍",
+
+
+wife:
+
+"Happy Anniversary to my beautiful wife, " +
+name +
+"! ❤️💍<br><br>" +
+
+"Life is more beautiful because I get to share it with you. " +
+"Thank you for filling our lives with love, laughter and countless memories. 🥰<br><br>" +
+
+"Here's to forever and many more beautiful years together. ❤️<br><br>" +
+
+"Happy Anniversary my love! 💍",
+
+
+other:
+
+"Happy Anniversary, " +
+name +
+"! ❤️💍<br><br>" +
+
+"May this beautiful relationship always be filled with love, happiness, understanding and countless beautiful memories. ✨<br><br>" +
+
+"Wishing you many more wonderful years together. ❤️<br><br>" +
+
+"Happy Anniversary! 💍"
+
+};
+
+
+if(
+relation === "girlfriend" ||
+relation === "boyfriend" ||
+relation === "husband" ||
+relation === "wife" ||
+relation === "other"
+){
+
+text.innerHTML =
+anniversaryWishes[relation];
+
+}
+
+else{
+
+text.innerHTML =
+
+"Happy Anniversary to " +
+relationText +
+", " +
+name +
+"! ❤️💍<br><br>" +
+
+"Wishing you both a beautiful anniversary filled with happiness, love, laughter and countless wonderful memories. 🥰<br><br>" +
+
+"May your bond always remain strong and may every coming year bring even more happiness into your lives. ✨<br><br>" +
+
+"Happy Anniversary! ❤️💍";
+
+}
+
+}
+
+
+box.style.display = "block";
+
+
+createHearts();
+
+
+window.scrollTo({
+
+top:document.body.scrollHeight,
+
+behavior:"smooth"
+
+});
+
+}
+
+
+/* HEART ANIMATION */
+
+function createHearts(){
+
+for(let i=0;i<25;i++){
+
+const heart =
+document.createElement("div");
+
+heart.className="heart";
+
+heart.innerHTML =
+["❤️","💖","💕","💗","💘","💝"]
+[Math.floor(Math.random()*6)];
+
+heart.style.left =
+Math.random()*100+"vw";
+
+heart.style.fontSize =
+(15+Math.random()*25)+"px";
+
+heart.style.animationDuration =
+(4+Math.random()*5)+"s";
+
+heart.style.animationDelay =
+Math.random()*2+"s";
+
+document.body.appendChild(heart);
+
+
+setTimeout(()=>{
+
+heart.remove();
+
+},9000);
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
