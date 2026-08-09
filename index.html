@@ -1,719 +1,1414 @@
+from pathlib import Path
+import webbrowser
+
+html = r'''
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Wish For You ❤️</title>
 
 <style>
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
+    font-family:Arial,Helvetica,sans-serif;
     min-height:100vh;
-    font-family:"Segoe UI",sans-serif;
-    background:linear-gradient(135deg,#18001f,#4b0038,#16001c);
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:25px;
-    overflow-x:hidden;
+    padding:18px;
+    background:linear-gradient(135deg,#ff758c,#764ba2);
+    color:#222;
 }
 
-.container{
-    width:100%;
-    max-width:650px;
-    padding:35px 28px;
+.container{max-width:1200px;margin:auto}
+
+.header{
     text-align:center;
+    color:white;
+    padding:20px 10px 30px;
+}
+
+.header h1{
+    font-size:clamp(38px,7vw,68px);
+    text-shadow:0 5px 25px rgba(0,0,0,.3);
+}
+
+.header p{
+    font-size:18px;
+    margin-top:8px;
+}
+
+.main-card{
+    background:rgba(255,255,255,.97);
     border-radius:28px;
-    background:rgba(255,255,255,0.10);
-    backdrop-filter:blur(18px);
-    border:1px solid rgba(255,255,255,0.2);
-    box-shadow:0 20px 70px rgba(0,0,0,0.5);
+    padding:28px;
+    box-shadow:0 25px 70px rgba(0,0,0,.25);
 }
 
-h1{
-    font-size:40px;
-    margin-bottom:10px;
+.section{margin-bottom:30px}
+
+.section-title{
+    font-size:21px;
+    font-weight:800;
+    margin-bottom:14px;
 }
 
-.subtitle{
-    color:#ffd8eb;
-    margin-bottom:28px;
-}
-
-input,select{
+.search,input[type=text],select,textarea{
     width:100%;
-    padding:15px;
-    margin:8px 0;
-    border:none;
-    outline:none;
+    padding:14px;
+    border:2px solid #eee;
     border-radius:13px;
+    outline:none;
     font-size:16px;
 }
 
-button{
-    width:100%;
+.search{margin-bottom:14px}
+
+input:focus,textarea:focus,select:focus{
+    border-color:#ff4f81;
+}
+
+.category-grid,
+.occasion-grid,
+.nickname-grid,
+.template-grid,
+.background-grid,
+.font-grid,
+.relationship-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(135px,1fr));
+    gap:10px;
+}
+
+.category,
+.occasion,
+.nickname,
+.template,
+.background,
+.font-option,
+.relationship{
+    border:2px solid #eee;
+    background:white;
+    border-radius:15px;
+    padding:13px 10px;
+    cursor:pointer;
+    text-align:center;
+    transition:.2s;
+    user-select:none;
+}
+
+.category:hover,
+.occasion:hover,
+.nickname:hover,
+.template:hover,
+.background:hover,
+.font-option:hover,
+.relationship:hover{
+    transform:translateY(-2px);
+    border-color:#ff7299;
+}
+
+.active{
+    background:#fff0f5!important;
+    border-color:#ff3d73!important;
+    color:#e52d63;
+    font-weight:bold;
+}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.field label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.nickname-custom{
+    margin-top:12px;
+    display:none;
+}
+
+.photo-box{
+    border:2px dashed #ff6b98;
+    background:#fff7fa;
+    border-radius:18px;
+    padding:25px;
+    text-align:center;
+}
+
+.photo-box input{
+    margin:15px 0;
+}
+
+#photoPreview{
+    display:none;
+    max-width:300px;
+    max-height:300px;
+    border-radius:20px;
+    object-fit:cover;
+    margin:15px auto;
+}
+
+.photo-controls{
+    display:none;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.small-btn{
+    border:0;
+    border-radius:10px;
+    padding:11px 14px;
+    cursor:pointer;
+    background:#eee;
+    font-weight:bold;
+}
+
+textarea{
+    min-height:150px;
+    resize:vertical;
+}
+
+.control-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.control-box{
+    background:#fafafa;
+    border:1px solid #eee;
+    border-radius:15px;
     padding:15px;
-    margin-top:15px;
-    border:none;
-    border-radius:13px;
-    background:linear-gradient(90deg,#ff2772,#ff0055);
+}
+
+.control-box label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+input[type=color]{
+    width:100%;
+    height:45px;
+    border:0;
+}
+
+input[type=range]{width:100%}
+
+.bg-pink{background:linear-gradient(135deg,#ff9a9e,#fad0c4)}
+.bg-purple{background:linear-gradient(135deg,#667eea,#764ba2);color:white}
+.bg-blue{background:linear-gradient(135deg,#36d1dc,#5b86e5);color:white}
+.bg-sunset{background:linear-gradient(135deg,#ff9966,#ff5e62);color:white}
+.bg-gold{background:linear-gradient(135deg,#f6d365,#fda085)}
+.bg-night{background:linear-gradient(135deg,#141e30,#243b55);color:white}
+.bg-green{background:linear-gradient(135deg,#11998e,#38ef7d);color:white}
+.bg-rose{background:linear-gradient(135deg,#ee9ca7,#ffdde1)}
+
+.generate-btn{
+    width:100%;
+    border:0;
+    border-radius:17px;
+    padding:19px;
+    background:linear-gradient(135deg,#ff416c,#ff4b2b);
     color:white;
-    font-size:18px;
+    font-size:21px;
     font-weight:bold;
     cursor:pointer;
-    transition:.3s;
 }
 
-button:hover{
-    transform:scale(1.03);
-}
-
-.wish{
+.result{
     display:none;
-    margin-top:30px;
-    padding:28px;
+    margin-top:35px;
+    padding-top:30px;
+    border-top:2px solid #eee;
+}
+
+.canvas-wrap{
+    background:#222;
+    padding:10px;
     border-radius:22px;
-    background:rgba(255,255,255,.12);
-    animation:appear 1s ease;
 }
 
-.wish h2{
-    font-size:30px;
-    margin-bottom:18px;
+#wishCanvas{
+    display:block;
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    border-radius:16px;
 }
 
-.wish p{
-    font-size:18px;
-    line-height:1.8;
-    color:#ffe8f3;
+.action-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-top:15px;
 }
 
-.footer{
-    margin-top:25px;
-    font-size:13px;
-    color:#ffc4dd;
+.action{
+    border:0;
+    border-radius:13px;
+    padding:15px;
+    cursor:pointer;
+    font-weight:bold;
 }
 
-.heart{
-    position:fixed;
-    bottom:-50px;
-    pointer-events:none;
-    animation:float 6s linear forwards;
+.copy{background:#222;color:white}
+.download{background:#5757e8;color:white}
+.share{background:#25d366;color:white}
+.new-wish{background:#ff4f81;color:white}
+
+@media(max-width:750px){
+    .row,.control-grid{grid-template-columns:1fr}
+    .action-grid{grid-template-columns:1fr 1fr}
+    .photo-controls{grid-template-columns:1fr 1fr}
 }
 
-@keyframes float{
-
-    0%{
-        transform:translateY(0) rotate(0deg);
-        opacity:0;
-    }
-
-    20%{
-        opacity:1;
-    }
-
-    100%{
-        transform:translateY(-110vh) rotate(360deg);
-        opacity:0;
-    }
+@media(max-width:450px){
+    body{padding:8px}
+    .main-card{padding:15px;border-radius:20px}
+    .action-grid{grid-template-columns:1fr}
 }
-
-@keyframes appear{
-
-    from{
-        opacity:0;
-        transform:translateY(25px) scale(.95);
-    }
-
-    to{
-        opacity:1;
-        transform:translateY(0) scale(1);
-    }
-}
-
-@media(max-width:500px){
-
-    h1{
-        font-size:30px;
-    }
-
-    .wish h2{
-        font-size:25px;
-    }
-
-    .wish p{
-        font-size:16px;
-    }
-
-}
-
 </style>
 </head>
-
 
 <body>
 
 <div class="container">
 
-<h1>💖 Wish For You 💖</h1>
+<div class="header">
+<h1>💌 Wish For You</h1>
+<p>Create a beautiful wish for anyone, for any occasion ❤️</p>
+</div>
 
-<div class="subtitle">
-Create a beautiful wish for someone special ✨
+<div class="main-card">
+
+<div class="section">
+<div class="section-title">🎉 Choose Occasion</div>
+
+<input id="occasionSearch"
+class="search"
+type="text"
+placeholder="🔍 Search birthday, anniversary, sister, mama, Diwali...">
+
+<div id="categories" class="category-grid"></div>
+
+<br>
+
+<div id="occasions" class="occasion-grid"></div>
 </div>
 
 
-<input
-    id="name"
-    type="text"
-    placeholder="Enter person's name ❤️"
->
+<div class="section">
+<div class="section-title">👤 Person Details</div>
 
+<div class="row">
 
-<select id="occasion">
+<div class="field">
+<label>Person's Name</label>
+<input id="personName"
+type="text"
+placeholder="Enter person's name ❤️">
+</div>
 
-<option value="birthday">🎂 Birthday</option>
+<div class="field">
+<label>Relationship</label>
 
-<option value="anniversary">💍 Anniversary</option>
-
+<select id="relationship">
+<option>Friend</option>
+<option>Best Friend</option>
+<option>Girlfriend</option>
+<option>Boyfriend</option>
+<option>Crush</option>
+<option>Wife</option>
+<option>Husband</option>
+<option>Sister</option>
+<option>Brother</option>
+<option>Mother</option>
+<option>Father</option>
+<option>Son</option>
+<option>Daughter</option>
+<option>Mama</option>
+<option>Mami</option>
+<option>Chacha</option>
+<option>Chachi</option>
+<option>Tau</option>
+<option>Tai</option>
+<option>Dada</option>
+<option>Dadi</option>
+<option>Nana</option>
+<option>Nani</option>
+<option>Bua</option>
+<option>Fufa</option>
+<option>Maasi</option>
+<option>Maasa</option>
+<option>Teacher</option>
+<option>Student</option>
+<option>Colleague</option>
+<option>Boss</option>
+<option>Other</option>
 </select>
+</div>
+
+</div>
+</div>
 
 
-<select id="relation">
+<div class="section">
+<div class="section-title">🥰 Choose Nickname</div>
 
-<option value="sister">👩 Sister / Behen</option>
+<div id="nicknames" class="nickname-grid">
 
-<option value="brother">👨 Brother / Bhai</option>
+<div class="nickname" data-name="Baby">👶 Baby</div>
+<div class="nickname" data-name="Babu">🥰 Babu</div>
+<div class="nickname" data-name="Darling">❤️ Darling</div>
+<div class="nickname" data-name="Jaan">💖 Jaan</div>
+<div class="nickname" data-name="Meri Jaan">💗 Meri Jaan</div>
+<div class="nickname" data-name="Shona">💕 Shona</div>
+<div class="nickname" data-name="Cutie">🥺 Cutie</div>
+<div class="nickname" data-name="Sweetheart">💝 Sweetheart</div>
+<div class="nickname" data-name="Bestie">🫶 Bestie</div>
+<div class="nickname" data-name="Dost">🤝 Dost</div>
+<div class="nickname" data-name="Yaar">😎 Yaar</div>
+<div class="nickname" data-name="Buddy">⭐ Buddy</div>
+<div class="nickname" data-name="Bro">🔥 Bro</div>
+<div class="nickname" data-name="Sis">💜 Sis</div>
+<div class="nickname" data-name="Princess">👑 Princess</div>
+<div class="nickname" data-name="King">👑 King</div>
+<div class="nickname" data-name="Queen">👑 Queen</div>
+<div class="nickname" data-name="Champ">🏆 Champ</div>
 
-<option value="mother">👩 Mother / Maa</option>
+</div>
 
-<option value="father">👨 Father / Papa</option>
+<input id="customNickname"
+class="nickname-custom"
+type="text"
+placeholder="✏️ Enter your own nickname">
 
-<option value="chacha">👨 Chacha</option>
-
-<option value="mami">👩 Mami</option>
-
-<option value="uncle">👨 Uncle</option>
-
-<option value="aunt">👩 Aunt</option>
-
-<option value="dada">👴 Dada / Nana</option>
-
-<option value="dadi">👵 Dadi / Nani</option>
-
-<option value="girlfriend">❤️ Girlfriend</option>
-
-<option value="boyfriend">❤️ Boyfriend</option>
-
-<option value="husband">💍 Husband</option>
-
-<option value="wife">💍 Wife</option>
-
-<option value="friend">🫂 Friend</option>
-
-<option value="other">✨ Other</option>
-
-</select>
+</div>
 
 
-<button onclick="createWish()">
-Create Wish 💌
+<div class="section">
+<div class="section-title">📸 Add & Edit Photo</div>
+
+<div class="photo-box">
+
+<p>Upload their photo and make the wish special ❤️</p>
+
+<input id="photoInput" type="file" accept="image/*">
+
+<img id="photoPreview" alt="Photo Preview">
+
+<div id="photoControls" class="photo-controls">
+
+<button class="small-btn" onclick="rotatePhoto(-90)">↶ Rotate</button>
+<button class="small-btn" onclick="rotatePhoto(90)">↷ Rotate</button>
+<button class="small-btn" onclick="zoomPhoto(1.1)">🔍 Zoom +</button>
+<button class="small-btn" onclick="zoomPhoto(.9)">🔎 Zoom -</button>
+
+</div>
+</div>
+</div>
+
+
+<div class="section">
+<div class="section-title">✍️ Wish Message</div>
+
+<div id="templates" class="template-grid"></div>
+
+<br>
+
+<textarea id="message"
+placeholder="Write your own special message..."></textarea>
+</div>
+
+
+<div class="section">
+
+<div class="section-title">🎨 Customize Your Wish</div>
+
+<div class="control-grid">
+
+<div class="control-box">
+<label>Text Colour</label>
+<input id="textColor" type="color" value="#ffffff">
+</div>
+
+<div class="control-box">
+<label>Font Size</label>
+<input id="fontSize" type="range" min="22" max="60" value="34">
+</div>
+
+<div class="control-box">
+<label>Photo Size</label>
+<input id="photoSize" type="range" min="180" max="600" value="430">
+</div>
+
+</div>
+
+<br>
+
+<div class="section-title">🖼️ Background</div>
+
+<div id="backgrounds" class="background-grid">
+
+<div class="background bg-pink" data-bg="pink">🌸 Pink</div>
+<div class="background bg-purple active" data-bg="purple">💜 Purple</div>
+<div class="background bg-blue" data-bg="blue">💙 Ocean</div>
+<div class="background bg-sunset" data-bg="sunset">🌅 Sunset</div>
+<div class="background bg-gold" data-bg="gold">✨ Golden</div>
+<div class="background bg-night" data-bg="night">🌙 Night</div>
+<div class="background bg-green" data-bg="green">🌿 Green</div>
+<div class="background bg-rose" data-bg="rose">🌹 Rose</div>
+
+</div>
+
+<br>
+
+<div class="section-title">🔤 Font</div>
+
+<div id="fonts" class="font-grid">
+
+<div class="font-option active" data-font="Arial">Arial</div>
+<div class="font-option" data-font="Georgia">Georgia</div>
+<div class="font-option" data-font="Courier New">Typewriter</div>
+<div class="font-option" data-font="Trebuchet MS">Modern</div>
+<div class="font-option" data-font="Impact">Bold</div>
+<div class="font-option" data-font="Comic Sans MS">Fun</div>
+
+</div>
+
+</div>
+
+
+<button class="generate-btn" onclick="generateWish()">
+✨ Generate My Wish
 </button>
 
 
-<div class="wish" id="wishBox">
+<div id="result" class="result">
 
-<h2 id="wishTitle"></h2>
+<div class="section-title">🎉 Your Wish Is Ready!</div>
 
-<p id="wishText"></p>
-
+<div class="canvas-wrap">
+<canvas id="wishCanvas"></canvas>
 </div>
 
+<div class="action-grid">
 
-<div class="footer">
-Made with ❤️ for your special people
+<button class="action copy" onclick="copyWish()">
+📋 Copy Wish
+</button>
+
+<button class="action download" onclick="downloadWish()">
+💾 Download
+</button>
+
+<button class="action share" onclick="shareWish()">
+🔗 Share
+</button>
+
+<button class="action new-wish" onclick="newWish()">
+✨ New Wish
+</button>
+
+</div>
 </div>
 
+</div>
 </div>
 
 
 <script>
 
+const occasionData = {
 
-function createWish(){
+"🎂 Birthday":[
+"Birthday",
+"Milestone Birthday",
+"Belated Birthday",
+"18th Birthday",
+"21st Birthday",
+"25th Birthday",
+"30th Birthday",
+"40th Birthday",
+"50th Birthday",
+"60th Birthday",
+"Birthday For Sister",
+"Birthday For Brother",
+"Birthday For Mama",
+"Birthday For Mami",
+"Birthday For Chacha",
+"Birthday For Chachi",
+"Birthday For Best Friend",
+"Birthday For Girlfriend",
+"Birthday For Boyfriend",
+"Birthday For Mom",
+"Birthday For Dad"
+],
 
-const name =
-document.getElementById("name").value.trim();
+"❤️ Love":[
+"Girlfriend",
+"Boyfriend",
+"Crush",
+"Proposal",
+"Valentine's Day",
+"First Date",
+"Relationship Anniversary",
+"Long Distance Love",
+"Love Message",
+"Romantic Message",
+"Miss My Love"
+],
 
-const occasion =
-document.getElementById("occasion").value;
+"💍 Marriage":[
+"Wedding",
+"Engagement",
+"Bridal Shower",
+"Bachelor Party",
+"Bachelorette Party",
+"Wedding Anniversary",
+"1st Wedding Anniversary",
+"5th Wedding Anniversary",
+"10th Wedding Anniversary",
+"25th Wedding Anniversary",
+"50th Wedding Anniversary",
+"Newly Married"
+],
 
-const relation =
-document.getElementById("relation").value;
+"🫶 Friendship":[
+"Friendship Day",
+"Best Friend",
+"New Friend",
+"Friendship Anniversary",
+"Bestie's Birthday",
+"Friend Appreciation",
+"Best Friend Forever",
+"Missing My Friend"
+],
 
+"👨‍👩‍👧 Family":[
+"Mother",
+"Father",
+"Brother",
+"Sister",
+"Son",
+"Daughter",
+"Mama",
+"Mami",
+"Mama-Mami",
+"Chacha",
+"Chachi",
+"Chacha-Chachi",
+"Tau",
+"Tai",
+"Dada",
+"Dadi",
+"Nana",
+"Nani",
+"Bua",
+"Fufa",
+"Maasi",
+"Maasa",
+"Parents",
+"Grandparents",
+"Family Appreciation",
+"Mother's Day",
+"Father's Day",
+"Raksha Bandhan"
+],
 
-if(name === ""){
+"👶 Baby":[
+"Pregnancy Announcement",
+"Baby Shower",
+"Newborn Baby",
+"Baby Boy",
+"Baby Girl",
+"Naming Ceremony",
+"Baby's First Birthday",
+"Congratulations New Parents",
+"Welcome Baby"
+],
 
-alert("Please enter a name ❤️");
+"🎓 Education":[
+"Graduation",
+"Farewell",
+"Exam Good Luck",
+"Exam Result",
+"Teacher's Day",
+"Teacher Appreciation",
+"School Achievement",
+"College Achievement",
+"Admission Congratulations"
+],
 
-return;
+"💼 Career":[
+"New Job",
+"Promotion",
+"Work Anniversary",
+"Retirement",
+"New Business",
+"Business Anniversary",
+"New Office",
+"Employee Appreciation",
+"Career Success"
+],
 
-}
+"🏆 Achievement":[
+"Congratulations",
+"Award",
+"Winning",
+"Success",
+"Milestone",
+"Competition Victory",
+"Personal Achievement",
+"Goal Achieved",
+"Proud Of You"
+],
 
+"🏠 Life Events":[
+"New Home",
+"Housewarming",
+"New Car",
+"Moving",
+"New Beginning",
+"New Journey",
+"New Chapter",
+"Good Luck For New Start"
+],
 
-const title =
-document.getElementById("wishTitle");
+"💐 Emotional":[
+"Thank You",
+"Sorry",
+"Miss You",
+"Get Well Soon",
+"Good Luck",
+"Take Care",
+"Thinking Of You",
+"Cheer Up",
+"Best Wishes",
+"Goodbye",
+"Farewell",
+"I Miss You",
+"Proud Of You"
+],
 
-const text =
-document.getElementById("wishText");
+"🌙 Festivals":[
+"Diwali",
+"Holi",
+"Eid",
+"Eid Mubarak",
+"Christmas",
+"New Year",
+"Raksha Bandhan",
+"Janmashtami",
+"Ganesh Chaturthi",
+"Navratri",
+"Dussehra",
+"Lohri",
+"Baisakhi",
+"Pongal",
+"Onam",
+"Guru Purnima",
+"Makar Sankranti",
+"Karwa Chauth",
+"Easter"
+],
 
-const box =
-document.getElementById("wishBox");
+"🇮🇳 National":[
+"Independence Day",
+"Republic Day",
+"Gandhi Jayanti",
+"Children's Day",
+"Women's Day",
+"Environment Day",
+"Yoga Day",
+"Labour Day"
+],
 
+"☀️ Daily":[
+"Good Morning",
+"Good Afternoon",
+"Good Evening",
+"Good Night",
+"Welcome",
+"Welcome Back",
+"Have A Nice Day",
+"Weekend Wishes",
+"Have A Great Day"
+],
 
-let relationText = "";
-
-
-/* RELATION NAMES */
-
-const relationNames = {
-
-sister:"my lovely sister",
-brother:"my dear brother",
-mother:"my wonderful mother",
-father:"my amazing father",
-chacha:"my dear Chacha",
-mami:"my lovely Mami",
-uncle:"my dear Uncle",
-aunt:"my lovely Aunt",
-dada:"my dear Dada/Nana",
-dadi:"my lovely Dadi/Nani",
-girlfriend:"the love of my life",
-boyfriend:"the love of my life",
-husband:"my wonderful husband",
-wife:"my beautiful wife",
-friend:"my amazing friend",
-other:"a very special person"
+"✨ Custom":[
+"Just Because",
+"Random Appreciation",
+"Custom Wish",
+"Personal Message",
+"Special Message"
+]
 
 };
 
 
-relationText =
-relationNames[relation];
+const templates = [
+"May your day be filled with happiness, laughter and beautiful memories. ❤️",
+"You deserve all the happiness in the world. Keep smiling and keep shining! 💖",
+"May every dream of yours come true and every moment bring you something beautiful. ✨",
+"Sending you lots of love, happiness and warm wishes today and always. 🥰",
+"Life is more beautiful because you are a part of it. Stay amazing always! ❤️"
+];
 
 
-/* BIRTHDAY */
+let selectedCategory="🎂 Birthday";
+let selectedOccasion="Birthday";
+let selectedNickname="";
+let selectedBackground="purple";
+let selectedFont="Arial";
+let uploadedImage=null;
+let photoRotation=0;
+let photoZoom=1;
 
-if(occasion === "birthday"){
 
+function loadCategories(){
 
-title.innerHTML =
-"🎂 Happy Birthday, " + name + " ❤️";
+const box=document.getElementById("categories");
+box.innerHTML="";
 
+Object.keys(occasionData).forEach(category=>{
 
-let wishes = {
+const div=document.createElement("div");
 
+div.className="category";
 
-sister:
+if(category===selectedCategory)
+div.classList.add("active");
 
-"Happy Birthday to my lovely sister, " +
-name +
-"! 🎂❤️<br><br>" +
+div.textContent=category;
 
-"You are not just my sister, but also one of the most special people in my life. " +
-"Thank you for always being there and making life more beautiful. 🥰<br><br>" +
+div.onclick=()=>{
 
-"May you always keep smiling, achieve everything you dream of, " +
-"and have an amazing year ahead. ✨<br><br>" +
+selectedCategory=category;
 
-"Happy Birthday once again! Stay happy and blessed always. ❤️",
+document.querySelectorAll(".category")
+.forEach(x=>x.classList.remove("active"));
 
+div.classList.add("active");
 
-brother:
-
-"Happy Birthday to my dear brother, " +
-name +
-"! 🎂🎉<br><br>" +
-
-"May you achieve every goal you have and always stay happy, healthy and successful. 💪✨<br><br>" +
-
-"Keep smiling, keep enjoying life and keep being the amazing person you are. ❤️<br><br>" +
-
-"Have a fantastic birthday! 🎉",
-
-
-mother:
-
-"Happy Birthday to the most wonderful mother, " +
-name +
-"! ❤️🎂<br><br>" +
-
-"Your love, care and support mean more than words can ever explain. " +
-"You make every moment of life special. 🥰<br><br>" +
-
-"May you always stay healthy, happy and smiling. " +
-"You deserve all the happiness in the world. 🌸<br><br>" +
-
-"Happy Birthday Maa! ❤️",
-
-
-father:
-
-"Happy Birthday to the most amazing father, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"Thank you for always supporting, guiding and believing in me. " +
-"Your strength and love inspire me every day. 🙏❤️<br><br>" +
-
-"May you always stay healthy, happy and successful. ✨<br><br>" +
-
-"Happy Birthday Papa! 🎉❤️",
-
-
-chacha:
-
-"Happy Birthday to my dear Chacha, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"May your life always be filled with happiness, good health and countless beautiful moments. ✨<br><br>" +
-
-"Have a wonderful birthday and an amazing year ahead! 🎉",
-
-
-mami:
-
-"Happy Birthday to my lovely Mami, " +
-name +
-"! 🎂🌸<br><br>" +
-
-"Your kindness, love and beautiful nature make every family moment special. ❤️<br><br>" +
-
-"May your birthday bring you endless happiness, good health and lots of beautiful memories. ✨<br><br>" +
-
-"Happy Birthday Mami! 🎉❤️",
-
-
-uncle:
-
-"Happy Birthday to my dear Uncle, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"May this new year of your life bring success, happiness, good health and lots of wonderful memories. ✨<br><br>" +
-
-"Have an amazing birthday! 🎉",
-
-
-aunt:
-
-"Happy Birthday to my lovely Aunt, " +
-name +
-"! 🎂🌸<br><br>" +
-
-"May your special day be filled with smiles, happiness and beautiful memories. ❤️<br><br>" +
-
-"Wishing you a wonderful year ahead! ✨",
-
-
-dada:
-
-"Happy Birthday to my dear Dada/Nana, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"Your love and blessings are truly precious. " +
-"May you always stay healthy, happy and surrounded by love. ❤️<br><br>" +
-
-"Wishing you a beautiful birthday filled with happiness. ✨",
-
-
-dadi:
-
-"Happy Birthday to my lovely Dadi/Nani, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"Your love and blessings make our family more beautiful. " +
-"May you always stay healthy, happy and smiling. 🌸<br><br>" +
-
-"Happy Birthday! ❤️",
-
-
-girlfriend:
-
-"Happy Birthday to the love of my life, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"You are one of the most beautiful parts of my life. " +
-"Your smile, your presence and every little moment with you means so much to me. 🥰<br><br>" +
-
-"May all your dreams come true and may your smile always stay this beautiful. ✨<br><br>" +
-
-"I am lucky to have you. Happy Birthday meri jaan! ❤️🎂",
-
-
-boyfriend:
-
-"Happy Birthday to the love of my life, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"Thank you for being such an amazing part of my life. " +
-"Every moment with you becomes a beautiful memory. 🥰<br><br>" +
-
-"May you achieve everything you dream of and always stay happy. ✨<br><br>" +
-
-"Happy Birthday my love! ❤️",
-
-
-husband:
-
-"Happy Birthday to my wonderful husband, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"Life feels more beautiful because I get to share it with you. " +
-"Thank you for your love, care and endless support. 🥰<br><br>" +
-
-"May this year bring you success, happiness and everything your heart desires. ✨<br><br>" +
-
-"Happy Birthday my love! ❤️",
-
-
-wife:
-
-"Happy Birthday to my beautiful wife, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"You make my life brighter with your love, smile and presence. " +
-"I am truly lucky to have you beside me. 🥰<br><br>" +
-
-"May every dream of yours come true and may happiness always surround you. ✨<br><br>" +
-
-"Happy Birthday my love! ❤️",
-
-
-friend:
-
-"Happy Birthday to my amazing friend, " +
-name +
-"! 🎂🎉<br><br>" +
-
-"May your life be filled with happiness, success, laughter and unforgettable memories. ❤️<br><br>" +
-
-"Keep smiling and keep shining! ✨<br><br>" +
-
-"Have an awesome birthday! 🎉",
-
-
-other:
-
-"Happy Birthday, " +
-name +
-"! 🎂❤️<br><br>" +
-
-"Wishing you a day filled with happiness, smiles and beautiful memories. ✨<br><br>" +
-
-"May this new year of your life bring you success, good health and endless happiness. ❤️<br><br>" +
-
-"Have a wonderful birthday! 🎉"
+loadOccasions(occasionData[category]);
 
 };
 
-
-text.innerHTML =
-wishes[relation];
-
-}
-
-
-/* ANNIVERSARY */
-
-else{
-
-
-title.innerHTML =
-"💍 Happy Anniversary, " + name + " ❤️";
-
-
-let anniversaryWishes = {
-
-
-girlfriend:
-
-"Happy Anniversary, " +
-name +
-"! ❤️💍<br><br>" +
-
-"Every moment with you is a memory I will always cherish. " +
-"Thank you for filling my life with love, happiness and beautiful moments. 🥰<br><br>" +
-
-"Here's to all the memories we have created and all the beautiful moments still waiting for us. ✨<br><br>" +
-
-"Happy Anniversary meri jaan! ❤️",
-
-
-boyfriend:
-
-"Happy Anniversary, " +
-name +
-"! ❤️💍<br><br>" +
-
-"Every moment spent with you is special and unforgettable. " +
-"Thank you for being such an amazing part of my life. 🥰<br><br>" +
-
-"May our bond become stronger and more beautiful with every passing year. ✨<br><br>" +
-
-"Happy Anniversary my love! ❤️",
-
-
-husband:
-
-"Happy Anniversary to my wonderful husband, " +
-name +
-"! ❤️💍<br><br>" +
-
-"Every year with you gives me more reasons to be grateful. " +
-"Thank you for your love, support and all the beautiful memories we share. 🥰<br><br>" +
-
-"Here's to many more beautiful years together. ❤️<br><br>" +
-
-"Happy Anniversary my love! 💍",
-
-
-wife:
-
-"Happy Anniversary to my beautiful wife, " +
-name +
-"! ❤️💍<br><br>" +
-
-"Life is more beautiful because I get to share it with you. " +
-"Thank you for filling our lives with love, laughter and countless memories. 🥰<br><br>" +
-
-"Here's to forever and many more beautiful years together. ❤️<br><br>" +
-
-"Happy Anniversary my love! 💍",
-
-
-other:
-
-"Happy Anniversary, " +
-name +
-"! ❤️💍<br><br>" +
-
-"May this beautiful relationship always be filled with love, happiness, understanding and countless beautiful memories. ✨<br><br>" +
-
-"Wishing you many more wonderful years together. ❤️<br><br>" +
-
-"Happy Anniversary! 💍"
-
-};
-
-
-if(
-relation === "girlfriend" ||
-relation === "boyfriend" ||
-relation === "husband" ||
-relation === "wife" ||
-relation === "other"
-){
-
-text.innerHTML =
-anniversaryWishes[relation];
-
-}
-
-else{
-
-text.innerHTML =
-
-"Happy Anniversary to " +
-relationText +
-", " +
-name +
-"! ❤️💍<br><br>" +
-
-"Wishing you both a beautiful anniversary filled with happiness, love, laughter and countless wonderful memories. 🥰<br><br>" +
-
-"May your bond always remain strong and may every coming year bring even more happiness into your lives. ✨<br><br>" +
-
-"Happy Anniversary! ❤️💍";
-
-}
-
-}
-
-
-box.style.display = "block";
-
-
-createHearts();
-
-
-window.scrollTo({
-
-top:document.body.scrollHeight,
-
-behavior:"smooth"
+box.appendChild(div);
 
 });
 
 }
 
 
-/* HEART ANIMATION */
+function loadOccasions(list){
 
-function createHearts(){
+const box=document.getElementById("occasions");
+box.innerHTML="";
 
-for(let i=0;i<25;i++){
+if(!list.length){
+box.innerHTML="<div class='occasion'>No occasion found</div>";
+return;
+}
 
-const heart =
-document.createElement("div");
+list.forEach((occasion,index)=>{
 
-heart.className="heart";
+const div=document.createElement("div");
+div.className="occasion";
 
-heart.innerHTML =
-["❤️","💖","💕","💗","💘","💝"]
-[Math.floor(Math.random()*6)];
+if(index===0){
+div.classList.add("active");
+selectedOccasion=occasion;
+}
 
-heart.style.left =
-Math.random()*100+"vw";
+div.textContent=occasion;
 
-heart.style.fontSize =
-(15+Math.random()*25)+"px";
+div.onclick=()=>{
 
-heart.style.animationDuration =
-(4+Math.random()*5)+"s";
+document.querySelectorAll(".occasion")
+.forEach(x=>x.classList.remove("active"));
 
-heart.style.animationDelay =
-Math.random()*2+"s";
+div.classList.add("active");
 
-document.body.appendChild(heart);
+selectedOccasion=occasion;
+
+loadTemplates(occasion);
+
+};
+
+box.appendChild(div);
+
+});
+
+loadTemplates(selectedOccasion);
+}
 
 
-setTimeout(()=>{
+document.getElementById("occasionSearch")
+.addEventListener("input",function(){
 
-heart.remove();
+const search=this.value.toLowerCase().trim();
 
-},9000);
+if(!search){
+loadOccasions(occasionData[selectedCategory]);
+return;
+}
+
+let results=[];
+
+Object.values(occasionData).flat().forEach(item=>{
+
+if(item.toLowerCase().includes(search))
+results.push(item);
+
+});
+
+loadOccasions(results);
+
+});
+
+
+function loadTemplates(occasion){
+
+const box=document.getElementById("templates");
+box.innerHTML="";
+
+const labels=[
+"💖 Sweet",
+"✨ Beautiful",
+"🥰 Heartfelt",
+"🌸 Warm",
+"❤️ Special"
+];
+
+templates.forEach((text,i)=>{
+
+const div=document.createElement("div");
+div.className="template";
+div.textContent=labels[i];
+
+div.onclick=()=>{
+
+document.getElementById("message").value=
+createMessage(occasion,text);
+
+};
+
+box.appendChild(div);
+
+});
+
+}
+
+
+function createMessage(occasion,base){
+
+const name=document.getElementById("personName").value.trim()||"You";
+const nickname=selectedNickname||name;
+const relation=document.getElementById("relationship").value;
+
+return "Dear "+nickname+",\n\n"+
+base+"\n\n"+
+"On this special occasion of "+occasion+
+", I just want you to know how special you are to me. "+
+"May you always stay happy, healthy and smiling. ❤️\n\n"+
+"With lots of love,\nYour "+relation;
+
+}
+
+
+document.querySelectorAll(".nickname").forEach(item=>{
+
+item.onclick=()=>{
+
+document.querySelectorAll(".nickname")
+.forEach(x=>x.classList.remove("active"));
+
+item.classList.add("active");
+
+selectedNickname=item.dataset.name;
+
+};
+
+});
+
+
+document.getElementById("customNickname")
+.addEventListener("input",function(){
+selectedNickname=this.value.trim();
+});
+
+
+document.querySelectorAll(".background").forEach(item=>{
+
+item.onclick=()=>{
+
+document.querySelectorAll(".background")
+.forEach(x=>x.classList.remove("active"));
+
+item.classList.add("active");
+
+selectedBackground=item.dataset.bg;
+
+};
+
+});
+
+
+document.querySelectorAll(".font-option").forEach(item=>{
+
+item.onclick=()=>{
+
+document.querySelectorAll(".font-option")
+.forEach(x=>x.classList.remove("active"));
+
+item.classList.add("active");
+
+selectedFont=item.dataset.font;
+
+};
+
+});
+
+
+document.getElementById("photoInput")
+.addEventListener("change",function(e){
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=function(event){
+
+uploadedImage=new Image();
+
+uploadedImage.onload=function(){
+
+photoRotation=0;
+photoZoom=1;
+
+const preview=document.getElementById("photoPreview");
+
+preview.src=event.target.result;
+preview.style.display="block";
+
+document.getElementById("photoControls")
+.style.display="grid";
+
+};
+
+uploadedImage.src=event.target.result;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+
+function rotatePhoto(degrees){
+
+if(!uploadedImage)return;
+
+photoRotation+=degrees;
+updatePreview();
+
+}
+
+
+function zoomPhoto(amount){
+
+if(!uploadedImage)return;
+
+photoZoom*=amount;
+
+photoZoom=Math.max(.5,Math.min(2.5,photoZoom));
+
+updatePreview();
+
+}
+
+
+function updatePreview(){
+
+const preview=document.getElementById("photoPreview");
+
+preview.style.transform=
+"rotate("+photoRotation+"deg) scale("+photoZoom+")";
+
+}
+
+
+function getGradient(ctx,w,h){
+
+const colors={
+
+pink:["#ff9a9e","#fad0c4"],
+purple:["#667eea","#764ba2"],
+blue:["#36d1dc","#5b86e5"],
+sunset:["#ff9966","#ff5e62"],
+gold:["#f6d365","#fda085"],
+night:["#141e30","#243b55"],
+green:["#11998e","#38ef7d"],
+rose:["#ee9ca7","#ffdde1"]
+
+};
+
+const c=colors[selectedBackground];
+
+const g=ctx.createLinearGradient(0,0,w,h);
+
+g.addColorStop(0,c[0]);
+g.addColorStop(1,c[1]);
+
+return g;
+
+}
+
+
+function generateWish(){
+
+const name=document.getElementById("personName")
+.value.trim();
+
+if(!name){
+alert("Please enter person's name ❤️");
+return;
+}
+
+let message=document.getElementById("message")
+.value.trim();
+
+if(!message)
+message=createMessage(selectedOccasion,templates[0]);
+
+const canvas=document.getElementById("wishCanvas");
+const ctx=canvas.getContext("2d");
+
+canvas.width=900;
+canvas.height=1200;
+
+ctx.fillStyle=getGradient(ctx,900,1200);
+ctx.fillRect(0,0,900,1200);
+
+ctx.globalAlpha=.18;
+
+for(let i=0;i<30;i++){
+
+ctx.beginPath();
+
+ctx.arc(
+Math.random()*900,
+Math.random()*1200,
+Math.random()*30+8,
+0,
+Math.PI*2
+);
+
+ctx.fillStyle="#ffffff";
+ctx.fill();
+
+}
+
+ctx.globalAlpha=1;
+
+if(uploadedImage)
+drawPhoto(ctx,uploadedImage,450,300);
+
+const textColor=document.getElementById("textColor").value;
+const fontSize=Number(document.getElementById("fontSize").value);
+
+ctx.fillStyle=textColor;
+ctx.textAlign="center";
+ctx.shadowColor="rgba(0,0,0,.35)";
+ctx.shadowBlur=7;
+
+ctx.font="bold 52px "+selectedFont;
+
+ctx.fillText(
+"✨ "+selectedOccasion+" ✨",
+450,580
+);
+
+ctx.font="bold 68px "+selectedFont;
+
+ctx.fillText(name,450,665);
+
+ctx.font="bold 30px "+selectedFont;
+
+ctx.fillText(
+"❤️ "+(selectedNickname||document.getElementById("relationship").value)+" ❤️",
+450,720
+);
+
+ctx.font=fontSize+"px "+selectedFont;
+
+wrapText(
+ctx,
+message,
+450,
+800,
+720,
+fontSize+14
+);
+
+ctx.font="24px Arial";
+
+ctx.fillText(
+"Made with ❤️ on Wish For You",
+450,
+1135
+);
+
+document.getElementById("result").style.display="block";
+
+document.getElementById("result")
+.scrollIntoView({behavior:"smooth"});
+
+}
+
+
+function drawPhoto(ctx,image,cx,cy){
+
+const maxSize=Number(
+document.getElementById("photoSize").value
+);
+
+let w=image.width;
+let h=image.height;
+
+const ratio=Math.min(maxSize/w,maxSize/h);
+
+w*=ratio;
+h*=ratio;
+
+w*=photoZoom;
+h*=photoZoom;
+
+ctx.save();
+
+ctx.translate(cx,cy);
+
+ctx.rotate(photoRotation*Math.PI/180);
+
+ctx.beginPath();
+
+if(ctx.roundRect){
+ctx.roundRect(-w/2,-h/2,w,h,35);
+}else{
+ctx.rect(-w/2,-h/2,w,h);
+}
+
+ctx.clip();
+
+ctx.drawImage(image,-w/2,-h/2,w,h);
+
+ctx.restore();
+
+ctx.save();
+
+ctx.strokeStyle="white";
+ctx.lineWidth=10;
+
+ctx.beginPath();
+
+if(ctx.roundRect){
+ctx.roundRect(cx-w/2,cy-h/2,w,h,35);
+}else{
+ctx.rect(cx-w/2,cy-h/2,w,h);
+}
+
+ctx.stroke();
+
+ctx.restore();
+
+}
+
+
+function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+
+const paragraphs=text.split("\n");
+
+paragraphs.forEach(paragraph=>{
+
+const words=paragraph.split(" ");
+let line="";
+
+words.forEach(word=>{
+
+const test=line+word+" ";
+
+if(ctx.measureText(test).width>maxWidth && line){
+
+ctx.fillText(line,x,y);
+
+line=word+" ";
+y+=lineHeight;
+
+}else{
+
+line=test;
+
+}
+
+});
+
+if(line){
+
+ctx.fillText(line,x,y);
+y+=lineHeight;
+
+}
+
+y+=8;
+
+});
+
+}
+
+
+async function copyWish(){
+
+const name=document.getElementById("personName")
+.value.trim();
+
+const message=document.getElementById("message")
+.value.trim();
+
+const text=
+"✨ "+selectedOccasion+" ✨\n\n"+
+"For "+name+" ❤️\n\n"+
+message;
+
+try{
+
+await navigator.clipboard.writeText(text);
+
+alert("✅ Wish copied!");
+
+}catch{
+
+alert("Copy is not supported in this browser.");
 
 }
 
 }
+
+
+function downloadWish(){
+
+const canvas=document.getElementById("wishCanvas");
+
+const link=document.createElement("a");
+
+link.download="wish-for-you.png";
+
+link.href=canvas.toDataURL("image/png");
+
+link.click();
+
+}
+
+
+async function shareWish(){
+
+const canvas=document.getElementById("wishCanvas");
+
+try{
+
+const blob=await new Promise(resolve=>
+canvas.toBlob(resolve,"image/png")
+);
+
+const file=new File(
+[blob],
+"wish-for-you.png",
+{type:"image/png"}
+);
+
+if(navigator.canShare && navigator.canShare({files:[file]})){
+
+await navigator.share({
+title:"Wish For You ❤️",
+text:"A special wish for you ❤️",
+files:[file]
+});
+
+}else if(navigator.share){
+
+await navigator.share({
+title:"Wish For You ❤️",
+text:"A special wish for you ❤️"
+});
+
+}else{
+
+alert("Sharing is not supported. Please use Download.");
+
+}
+
+}catch(error){
+
+if(error.name!=="AbortError")
+alert("Could not share. Please use Download.");
+
+}
+
+}
+
+
+function newWish(){
+
+document.getElementById("personName").value="";
+document.getElementById("message").value="";
+document.getElementById("customNickname").value="";
+document.getElementById("photoInput").value="";
+
+document.getElementById("photoPreview").style.display="none";
+document.getElementById("photoControls").style.display="none";
+document.getElementById("result").style.display="none";
+
+document.querySelectorAll(".nickname")
+.forEach(x=>x.classList.remove("active"));
+
+selectedNickname="";
+uploadedImage=null;
+photoRotation=0;
+photoZoom=1;
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+loadCategories();
+loadOccasions(occasionData[selectedCategory]);
 
 </script>
 
 </body>
 </html>
+'''
+
+file_path = Path("wish_website.html")
+
+file_path.write_text(html, encoding="utf-8")
+
+print("===================================")
+print("✅ Wish For You website updated!")
+print("📁 File:", file_path.resolve())
+print("===================================")
+
+webbrowser.open(file_path.resolve().as_uri())
